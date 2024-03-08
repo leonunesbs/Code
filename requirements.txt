@@ -1,8 +1,13 @@
+altgraph==0.17.4
 chardet==5.2.0
+macholib==1.16.3
+packaging==23.2
 pillow==10.2.0
+pyinstaller==6.4.0
+pyinstaller-hooks-contrib==2024.2
 PyPDF2==3.0.1
 pytz==2024.1
 reportlab==4.1.0
-tk==0.1.0
+setuptools==69.1.1
 typing_extensions==4.10.0
 zope.interface==6.2

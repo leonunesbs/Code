@@ -43,8 +43,9 @@ def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_
         }
     }
 
-    modelo_pdf = 'modelo.pdf'
-    arquivo_saida = f'output/{formatar_nome(nome_paciente)}.pdf'
+    modelo_pdf = '/Users/leonunesbs/Documents/HGF/Code/modelo.pdf'
+    arquivo_saida = f'/Users/leonunesbs/Documents/HGF/Code/output/{
+        formatar_nome(nome_paciente)}.pdf'
     if preencher_pdf(modelo_pdf, dados, arquivo_saida):
         messagebox.showinfo("Sucesso", "O arquivo foi criado com sucesso!")
         limpar_campos_formulario(
