@@ -2,7 +2,7 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-from gui import preencher_e_salvar
+from interface.gui import preencher_e_salvar
 
 # Cria a janela principal
 root = tk.Tk()

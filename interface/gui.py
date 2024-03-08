@@ -2,7 +2,7 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import messagebox, ttk
 
-from pdf import preencher_pdf
+from manager.pdf import preencher_pdf
 
 
 def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, tratamento_var):
@@ -28,17 +28,23 @@ def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_
     dados = {
         # página 1
         1: {
-            (130, 645): formatar_nome(nome_paciente),
-            (450, 645): numero_prontuario,
-            (80, 500): formatar_data(data_procedimento),
-            (210, 500): formatar_data(data_procedimento),
-            (80, 145): formatar_data(data_procedimento),
-            (65, 325): tratamento
+            (100, 633): formatar_nome(nome_paciente),
+            (475, 633): numero_prontuario,
+            (53, 483): formatar_data(data_procedimento),
+            (215, 483): formatar_data(data_procedimento),
+            (60, 110): formatar_data(data_procedimento),
+            (50, 300): tratamento
+        },
+        2: {
+            (100, 705): formatar_nome(nome_paciente),
+            (440, 705): numero_prontuario,
+            (45, 670): formatar_nome(data_procedimento),
+            (75, 640): formatar_nome(nome_medico),
         }
     }
 
     modelo_pdf = 'modelo.pdf'
-    arquivo_saida = f'{formatar_nome(nome_paciente)}.pdf'
+    arquivo_saida = f'output/{formatar_nome(nome_paciente)}.pdf'
     if preencher_pdf(modelo_pdf, dados, arquivo_saida):
         messagebox.showinfo("Sucesso", "O arquivo foi criado com sucesso!")
         limpar_campos_formulario(
