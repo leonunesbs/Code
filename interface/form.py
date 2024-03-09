@@ -1,6 +1,6 @@
 import tkinter as tk
 from datetime import datetime
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 
 from manager.pdf import preencher_pdf
 
@@ -38,8 +38,14 @@ def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_
         2: {
             (100, 705): formatar_nome(nome_paciente),
             (440, 705): numero_prontuario,
-            (45, 670): formatar_nome(data_procedimento),
+            (45, 670): formatar_data(data_procedimento),
             (75, 640): formatar_nome(nome_medico),
+        },
+        3: {
+            (75, 330): formatar_nome(nome_paciente),
+            (345, 330): formatar_data(data_procedimento),
+            (485, 330): formatar_nome(nome_paciente),
+            (760, 330): formatar_data(data_procedimento),
         }
     }
 

@@ -1,7 +1,7 @@
 import io
 
 from PyPDF2 import PdfReader, PdfWriter
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import A2
 from reportlab.pdfgen import canvas
 
 
@@ -12,7 +12,7 @@ def preencher_pdf(pdf_template, dados, output_file):
     try:
         for page_num, page_data in dados.items():
             overlay = io.BytesIO()
-            can = canvas.Canvas(overlay, pagesize=letter)
+            can = canvas.Canvas(overlay, pagesize=A2)
             can.setFontSize(10)
 
             for field, value in page_data.items():
