@@ -5,14 +5,16 @@ import zipfile
 from datetime import datetime
 from tkinter import messagebox, ttk
 
+from PyPDF2 import PdfMerger
+
 from interface.form import preencher_e_salvar
 
 
 def zip_output_folder():
     # Altere este caminho conforme necessário
     folder_to_zip = '/Users/leonunesbs/Documents/HGF/Code/output'
-    output_zip_file = f'archive/{datetime.now().strftime(
-        '%d-%m-%Y')}output.zip'  # Nome do arquivo zip de saída
+    # Nome do arquivo zip de saída
+    output_zip_file = f"archive/{datetime.now().strftime('%d%m%Y')}.zip"
 
     with zipfile.ZipFile(output_zip_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(folder_to_zip):
@@ -42,6 +44,26 @@ def clear_output_folder():
         "Confirmação", "Tem certeza de que deseja limpar o diretório de saída?")
     if confirm:
         do_clear()
+
+
+def merge_pdf_files():
+    output_folder = '/Users/leonunesbs/Documents/HGF/Code/output'
+    merged_pdf_path = os.path.join(output_folder, 'merged_output.pdf')
+
+    merger = PdfMerger()
+
+    # Add all PDF files in the output folder to the merger
+    for root, _, files in os.walk(output_folder):
+        for file in files:
+            if file.endswith('.pdf'):
+                merger.append(os.path.join(root, file))
+
+    # Write the merged PDF to a file
+    with open(merged_pdf_path, 'wb') as merged_pdf_file:
+        merger.write(merged_pdf_file)
+
+    messagebox.showinfo("Merge Concluído",
+                        "Os arquivos PDF foram mesclados com sucesso.")
 
 
 # Cria a janela principal
@@ -91,6 +113,10 @@ button_zip_output.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
 button_clear_output = tk.Button(
     root, text="Limpar Output", command=clear_output_folder)
 button_clear_output.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
+
+button_merge_pdf = tk.Button(
+    root, text="Merge PDF", command=merge_pdf_files)
+button_merge_pdf.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
 
 # Vincula a função preencher_e_salvar à tecla "Enter" em qualquer campo de entrada
 root.bind('<Return>', lambda event: preencher_e_salvar(entry_nome_paciente,
