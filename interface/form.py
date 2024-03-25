@@ -7,6 +7,8 @@ from tkinter import filedialog, messagebox
 from libs import root_directory
 from manager.actions import preencher_pdf
 
+start_csv_row = 5
+
 
 def handle_csv_upload(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var):
     file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
@@ -18,10 +20,9 @@ def handle_csv_upload(entry_nome_paciente, entry_numero_prontuario, entry_nome_m
             with open(file_path, newline='', encoding='utf-8') as csvfile:
 
                 reader = csv.reader(csvfile, delimiter=';')
-                next(reader)
-                next(reader)
-                next(reader)
-                next(reader)
+
+                for i in range(start_csv_row - 1):
+                    next(reader)
                 for row in reader:
                     entry_nome_paciente.delete(0, tk.END)
                     entry_numero_prontuario.delete(0, tk.END)

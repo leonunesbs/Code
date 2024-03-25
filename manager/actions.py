@@ -16,8 +16,7 @@ from libs import output_folder
 def clear_output_folder():
     # Função para limpar o diretório de saída
     def do_clear():
-        folder_to_clear = output_folder
-        for root, dirs, files in os.walk(folder_to_clear):
+        for root, dirs, files in os.walk(output_folder):
             for file in files:
                 os.remove(os.path.join(root, file))
             for dir in dirs:
