@@ -1,16 +1,55 @@
+import csv
+import os
 import tkinter as tk
 from datetime import datetime
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 
-from manager.pdf import preencher_pdf
+from libs import root_directory
+from manager.actions import preencher_pdf
 
 
-def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, tratamento_var):
+def handle_csv_upload(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var):
+    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    if file_path:
+        try:
+            tratamento_var = entry_tratamento_var.get()
+            if not tratamento_var:
+                raise ValueError('Selecione o tipo de tratamento!')
+            with open(file_path, newline='', encoding='utf-8') as csvfile:
+
+                reader = csv.reader(csvfile, delimiter=';')
+                next(reader)
+                next(reader)
+                next(reader)
+                next(reader)
+                for row in reader:
+                    entry_nome_paciente.delete(0, tk.END)
+                    entry_numero_prontuario.delete(0, tk.END)
+                    entry_nome_medico.delete(0, tk.END)
+
+                    entry_numero_prontuario.insert(0, row[0])
+                    entry_nome_paciente.insert(0, row[1])
+                    entry_nome_medico.insert(0, row[3])
+
+                    # Chame a função para preencher e salvar o PDF
+                    preencher_e_salvar(
+                        entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var)
+
+            messagebox.showinfo(
+                "Sucesso", "PDFs gerados com sucesso a partir do CSV!")
+        except Exception as e:
+            messagebox.showerror(
+                "Erro", f"Erro ao processar o arquivo CSV: {e}")
+            limpar_campos_formulario(
+                entry_nome_paciente, entry_numero_prontuario, entry_nome_medico)
+
+
+def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var):
     nome_paciente = entry_nome_paciente.get()
     numero_prontuario = entry_numero_prontuario.get()
     nome_medico = entry_nome_medico.get()
     data_procedimento = entry_data_procedimento.get()
-    escolha_tratamento = tratamento_var.get()
+    escolha_tratamento = entry_tratamento_var.get()
 
     if not data_procedimento:
         data_procedimento = datetime.now().strftime('%d/%m/%Y')
@@ -49,23 +88,22 @@ def preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_
         }
     }
 
-    modelo_pdf = '/Users/leonunesbs/Documents/HGF/Code/modelo.pdf'
-    arquivo_saida = f'/Users/leonunesbs/Documents/HGF/Code/output/{
-        formatar_nome(nome_paciente)}.pdf'
+    modelo_pdf = os.path.join(root_directory, 'modelo.pdf')
+    arquivo_saida = os.path.join(
+        root_directory, 'output', f'{formatar_nome(nome_paciente)}.pdf')
     if preencher_pdf(modelo_pdf, dados, arquivo_saida):
-        messagebox.showinfo("Sucesso", "O arquivo foi criado com sucesso!")
+        messagebox.showinfo(
+            "Sucesso", f"O arquivo foi criado com sucesso! ID: {numero_prontuario}")
         limpar_campos_formulario(
-            entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento)
+            entry_nome_paciente, entry_numero_prontuario, entry_nome_medico)
     else:
         messagebox.showerror("Erro", "Ocorreu um erro ao criar o arquivo.")
 
 
-def limpar_campos_formulario(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento):
+def limpar_campos_formulario(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico):
     entry_nome_paciente.delete(0, tk.END)
     entry_numero_prontuario.delete(0, tk.END)
     entry_nome_medico.delete(0, tk.END)
-    entry_data_procedimento.delete(0, tk.END)
-    entry_data_procedimento.insert(0, datetime.now().strftime('%d/%m/%Y'))
     entry_nome_paciente.focus_set()
 
 

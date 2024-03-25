@@ -1,76 +1,15 @@
 import os
-import subprocess
 import tkinter as tk
-import zipfile
 from datetime import datetime
-from tkinter import messagebox, ttk
+from tkinter import ttk
 
-from PyPDF2 import PdfMerger
+from interface.form import handle_csv_upload, preencher_e_salvar
+from manager.actions import (clear_output_folder, merge_pdf_files,
+                             zip_output_folder)
 
-from interface.form import preencher_e_salvar
-
-
-def zip_output_folder():
-    # Altere este caminho conforme necessário
-    folder_to_zip = '/Users/leonunesbs/Documents/HGF/Code/output'
-    # Nome do arquivo zip de saída
-    output_zip_file = f"archive/{datetime.now().strftime('%d%m%Y')}.zip"
-
-    with zipfile.ZipFile(output_zip_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, _, files in os.walk(folder_to_zip):
-            for file in files:
-                file_path = os.path.join(root, file)
-                zipf.write(file_path, os.path.relpath(
-                    file_path, folder_to_zip))
-
-    # Abrir o Finder na pasta de destino
-    subprocess.Popen(['open', '-R', output_zip_file])
-
-
-def clear_output_folder():
-    # Função para limpar o diretório de saída
-    def do_clear():
-        folder_to_clear = '/Users/leonunesbs/Documents/HGF/Code/output'
-        for root, dirs, files in os.walk(folder_to_clear):
-            for file in files:
-                os.remove(os.path.join(root, file))
-            for dir in dirs:
-                os.rmdir(os.path.join(root, dir))
-        messagebox.showinfo("Limpeza Concluída",
-                            "O diretório de saída foi limpo com sucesso.")
-
-    # Confirmar antes de limpar o diretório de saída
-    confirm = messagebox.askyesno(
-        "Confirmação", "Tem certeza de que deseja limpar o diretório de saída?")
-    if confirm:
-        do_clear()
-
-
-def merge_pdf_files():
-    output_folder = '/Users/leonunesbs/Documents/HGF/Code/output'
-    merged_pdf_path = os.path.join(output_folder, 'merged_output.pdf')
-
-    merger = PdfMerger()
-
-    # Add all PDF files in the output folder to the merger
-    for root, _, files in os.walk(output_folder):
-        for file in files:
-            if file.endswith('.pdf'):
-                merger.append(os.path.join(root, file))
-
-    # Write the merged PDF to a file
-    with open(merged_pdf_path, 'wb') as merged_pdf_file:
-        merger.write(merged_pdf_file)
-
-    messagebox.showinfo("Merge Concluído",
-                        "Os arquivos PDF foram mesclados com sucesso.")
-
-
-# Cria a janela principal
 root = tk.Tk()
 root.title("Preencher PDF")
 
-# Cria e posiciona os widgets na janela
 widgets = {
     "Nome do Paciente": (0, 0),
     "Número do Prontuário": (1, 0),
@@ -97,30 +36,33 @@ entry_data_procedimento = tk.Entry(root)
 entry_data_procedimento.grid(row=3, column=1, padx=5, pady=5)
 entry_data_procedimento.insert(0, datetime.now().strftime('%d/%m/%Y'))
 
-tratamento_var = tk.StringVar()
-combo_tratamento = ttk.Combobox(root, textvariable=tratamento_var)
+entry_tratamento_var = tk.StringVar()
+combo_tratamento = ttk.Combobox(root, textvariable=entry_tratamento_var)
 combo_tratamento['values'] = ("Avastin", "Eylia")
 combo_tratamento.grid(row=4, column=1, padx=5, pady=5)
 
 button_preencher_salvar = tk.Button(
-    root, text="Preencher e Salvar", command=lambda: preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, tratamento_var))
+    root, text="Preencher e Salvar", command=lambda: preencher_e_salvar(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var))
 button_preencher_salvar.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
 button_zip_output = tk.Button(
     root, text="Zip Output", command=zip_output_folder)
-button_zip_output.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
+button_zip_output.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
+
+# Adicione o botão de upload do CSV
+button_upload_csv = tk.Button(
+    root, text="Upload CSV", command=lambda: handle_csv_upload(entry_nome_paciente, entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var))
+button_upload_csv.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
 
 button_clear_output = tk.Button(
     root, text="Limpar Output", command=clear_output_folder)
-button_clear_output.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
+button_clear_output.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
 
 button_merge_pdf = tk.Button(
     root, text="Merge PDF", command=merge_pdf_files)
-button_merge_pdf.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
-
+button_merge_pdf.grid(row=9, column=0, columnspan=2, padx=5, pady=5)
 # Vincula a função preencher_e_salvar à tecla "Enter" em qualquer campo de entrada
 root.bind('<Return>', lambda event: preencher_e_salvar(entry_nome_paciente,
-          entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, tratamento_var))
+          entry_numero_prontuario, entry_nome_medico, entry_data_procedimento, entry_tratamento_var))
 
-# Inicia o loop principal da aplicação
 root.mainloop()
